@@ -4,6 +4,9 @@ const (
 	Failure = iota // 失败
 	Success        // 成功
 
+	Stauts = "Status"
+	Data   = "Data"
+
 	ErrParam = "Invalid parameter"  // 参数错误
 	ErrPerm  = "Invalid permission" // 权限错误
 

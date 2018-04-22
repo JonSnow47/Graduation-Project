@@ -24,7 +24,7 @@ type Admin struct {
 	Name    string        `bson:"name"`
 	Pwd     string        `bson:"pwd"`
 	Created time.Time     `bson:"created"`
-	Status  bool          `bson:"status"`
+	State   bool          `bson:"state"`
 }
 
 func CollectionAdmin() *mgo.Session {
@@ -38,9 +38,9 @@ func CollectionAdmin() *mgo.Session {
 	s.SetMode(mgo.Monotonic, true)
 
 	s.DB(consts.Database).C("admin").EnsureIndex(mgo.Index{
-		Key:    []string{"name"},
-		Unique: true,
-		// DropDups:   true,
+		Key:        []string{"name"},
+		Unique:     true,
+		DropDups:   true,
 		Background: true,
 		Sparse:     true,
 	})
@@ -70,7 +70,7 @@ func (sp *adminServiceProvide) New(name, pwd string) (string, error) {
 		Name:    name,
 		Pwd:     pwd,
 		Created: time.Now(),
-		Status:  true,
+		State:   true,
 	}
 
 	err = c.Insert(a)

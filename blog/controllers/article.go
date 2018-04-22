@@ -29,7 +29,8 @@ func (c *ArticleController) New() {
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
 		log.Println(consts.ErrParam, err)
-		c.Data["json"] = map[string]interface{}{consts.ErrParam: err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
+		c.ServeJSON()
 		return
 	}
 
@@ -43,35 +44,41 @@ func (c *ArticleController) New() {
 	id, err := models.ArticleService.New(a)
 	if err != nil {
 		log.Println("Create article failed:", err)
-		c.Data["json"] = map[string]interface{}{"Create article failed:": err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
+		c.ServeJSON()
 		return
 	}
 
-	c.Data["json"] = map[string]string{"ObjectId": id}
+	c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success, consts.Data: map[string]string{"id": id}}
 	c.ServeJSON()
 }
 
-// Delete
+// Delete modify article's state to -2.
 func (c *ArticleController) Delete() {
 	var req struct {
 		Id string `json:"id"`
 	}
+
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
 		log.Println(consts.ErrParam, err)
-		c.Data["json"] = map[string]interface{}{consts.ErrParam: err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
+		c.ServeJSON()
 		return
 	}
 
 	if err = models.ArticleService.Delete(req.Id); err != nil {
 		log.Println(consts.ErrMongo, err)
-		c.Data["json"] = map[string]interface{}{"status": err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
+		c.ServeJSON()
+		return
 	}
 
-	c.Data["json"] = map[string]interface{}{"status": err}
+	c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success}
 	c.ServeJSON()
 }
 
+// Update update article.
 func (c *ArticleController) Update() {
 	var req struct {
 		Id      string          `json:"id" validate:"required"`
@@ -85,7 +92,8 @@ func (c *ArticleController) Update() {
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
 		log.Println(consts.ErrParam, err)
-		c.Data["json"] = map[string]interface{}{consts.ErrParam: err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
+		c.ServeJSON()
 		return
 	}
 
@@ -100,13 +108,43 @@ func (c *ArticleController) Update() {
 	err = models.ArticleService.Update(a)
 	if err != nil {
 		log.Println()
-		c.Data["json"] = err.Error()
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
+		c.ServeJSON()
 		return
 	}
-	c.Data["json"] = map[string]string{"status": "update success!"}
+
+	c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success}
 	c.ServeJSON()
 }
 
+// ModifyState
+func (c *ArticleController) ModifyState() {
+	var req struct {
+		Id    string `json:"id" validate:"required"`
+		State int    `json:"state"`
+	}
+
+	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		log.Println(consts.ErrParam, err)
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
+		c.ServeJSON()
+		return
+	}
+
+	err = models.ArticleService.ModifyState(req.Id, req.State)
+	if err != nil {
+		log.Println()
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
+		c.ServeJSON()
+		return
+	}
+
+	c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success}
+	c.ServeJSON()
+}
+
+// Get get a article by id.
 func (c *ArticleController) Get() {
 	var req struct {
 		Id string `json:"id" validate:"required"`
@@ -115,46 +153,53 @@ func (c *ArticleController) Get() {
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
 		log.Println(consts.ErrParam, err)
-		c.Data["json"] = map[string]interface{}{consts.ErrParam: err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
+		c.ServeJSON()
 		return
 	}
 
-	a, err := models.ArticleService.GetOne(req.Id)
+	a, err := models.ArticleService.Get(req.Id)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			c.Data["json"] = map[string]interface{}{"status": consts.Success, "data": ""}
+			c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
+			c.ServeJSON()
 		} else {
 			log.Println("Mongodb error:", err)
 			c.Data["json"] = err.Error()
 		}
 	}
 
-	c.Data["json"] = map[string]interface{}{"status": consts.Success, "data": *a}
+	c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success, consts.Data: a}
 	c.ServeJSON()
 }
 
+// All admin can use this model view all articles.
 func (c *ArticleController) All() {
 	var req struct {
 		Page int `json:"page"`
 	}
+
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
 		log.Println(consts.ErrParam, err)
-		c.Data["json"] = map[string]interface{}{consts.ErrParam: err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
+		c.ServeJSON()
 		return
 	}
 
-	articles, err := models.ArticleService.Approved(req.Page)
+	articles, err := models.ArticleService.All(req.Page)
 	if err != nil {
 		log.Println(consts.ErrMongo, err)
-		c.Data["json"] = map[string]interface{}{"status": err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
+		c.ServeJSON()
 		return
 	}
 
-	c.Data["json"] = map[string]interface{}{"status": consts.Success, "data": articles}
+	c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success, consts.Data: articles}
 	c.ServeJSON()
 }
 
+// Approved view all approved articles.
 func (c *ArticleController) Approved() {
 	var req struct {
 		Page int `json:"page"`
@@ -162,19 +207,51 @@ func (c *ArticleController) Approved() {
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
 		log.Println(consts.ErrParam, err)
-		c.Data["json"] = map[string]interface{}{consts.ErrParam: err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
+		c.ServeJSON()
 		return
 	}
 
 	articles, err := models.ArticleService.Approved(req.Page)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			c.Data["json"] = map[string]interface{}{"status": err}
+			c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
+			c.ServeJSON()
 			return
 		}
 		log.Println("Mongodb error:", err)
 		return
 	}
-	c.Data["json"] = map[string]interface{}{"status": consts.Success, "data": articles}
+
+	c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success, consts.Data: articles}
+	c.ServeJSON()
+}
+
+// ListCreated admin use this model to audit articles.
+func (c *ArticleController) ListCreated() {
+	var req struct {
+		Page int `json:"page"`
+	}
+
+	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		log.Println(consts.ErrParam, err)
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
+		c.ServeJSON()
+		return
+	}
+
+	articles, err := models.ArticleService.ListCreated(req.Page)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
+			c.ServeJSON()
+			return
+		}
+		log.Println("Mongodb error:", err)
+		return
+	}
+
+	c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success, consts.Data: articles}
 	c.ServeJSON()
 }

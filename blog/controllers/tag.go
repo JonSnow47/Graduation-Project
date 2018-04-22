@@ -15,7 +15,7 @@ type TagController struct{ beego.Controller }
 func (c *TagController) New() {
 	var (
 		req struct {
-			Tag string `json:"tag"`
+			Tag string `json:"tag" validate:"required,len<16"`
 		}
 		id  string
 		err error
@@ -24,41 +24,41 @@ func (c *TagController) New() {
 	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
 		log.Println(consts.ErrParam, err)
-		c.Data["json"] = map[string]interface{}{"status:": err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
 		goto Finish
 	}
 
 	id, err = models.TagService.New(req.Tag)
 	if err != nil {
 		log.Println(consts.ErrMongo, err)
-		c.Data["json"] = map[string]interface{}{"status:": err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
 		goto Finish
 	}
 
-	c.Data["json"] = map[string]interface{}{"status": consts.Success, "data": id}
+	c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success, consts.Data: id}
 Finish:
 	c.ServeJSON()
 }
 
 func (c *TagController) Delete() {
 	var req struct {
-		Id string `json:"id"`
+		Id string `json:"id" validate:"len=24"`
 	}
 
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
 		log.Println(consts.ErrParam, err)
-		c.Data["json"] = map[string]interface{}{"status": err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
 		goto Finish
 	}
 
 	if err = models.TagService.Delete(req.Id); err != nil {
 		log.Println(consts.ErrMongo, err)
-		c.Data["json"] = map[string]interface{}{"status": err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
 		goto Finish
 	}
 
-	c.Data["json"] = map[string]interface{}{"status": consts.Success}
+	c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success}
 Finish:
 	c.ServeJSON()
 }
@@ -71,17 +71,17 @@ func (c *TagController) Enable() {
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
 		log.Println(consts.ErrParam, err)
-		c.Data["json"] = map[string]interface{}{"status": err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
 		goto Finish
 	}
 
 	if err = models.TagService.Enable(req.Id); err != nil {
 		log.Println(consts.ErrMongo, err)
-		c.Data["json"] = map[string]interface{}{"status": err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
 		goto Finish
 	}
 
-	c.Data["json"] = map[string]interface{}{"status": consts.Success}
+	c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success}
 Finish:
 	c.ServeJSON()
 }
@@ -92,23 +92,23 @@ func (c *TagController) Get() {
 		req struct {
 			Id string `json:"id"`
 		}
-		t *models.Tag
+		t models.Tag
 	)
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
 		log.Println(consts.ErrParam, err)
-		c.Data["json"] = map[string]interface{}{"status": err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
 		goto Finish
 	}
 
 	t, err = models.TagService.Get(req.Id)
 	if err != nil {
 		log.Println(consts.ErrMongo, err)
-		c.Data["json"] = map[string]interface{}{"status": err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
 		goto Finish
 	}
 
-	c.Data["json"] = map[string]interface{}{"status": consts.Success, "data": t}
+	c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success, consts.Data: t}
 Finish:
 	c.ServeJSON()
 }
@@ -119,24 +119,24 @@ func (c *TagController) All() {
 		req struct {
 			Page int `json:"page"`
 		}
-		t []*models.Tag
+		tags []models.Tag
 	)
 
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
 		log.Println(consts.ErrParam, err)
-		c.Data["json"] = map[string]interface{}{"status": err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
 		goto Finish
 	}
 
-	t, err = models.TagService.All(req.Page)
+	tags, err = models.TagService.All(req.Page)
 	if err != nil {
 		log.Println(consts.ErrMongo, err)
-		c.Data["json"] = map[string]interface{}{"status": err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure, consts.Data: err}
 		goto Finish
 	}
 
-	c.Data["json"] = map[string]interface{}{"status": consts.Success, "data": t}
+	c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success, consts.Data: tags}
 Finish:
 	c.ServeJSON()
 }

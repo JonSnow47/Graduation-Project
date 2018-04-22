@@ -12,11 +12,13 @@ func init() {
 	beego.Router("/admin/logout", &controllers.AdminController{}, "Post:Logout")
 
 	beego.Router("/blog/article/new", &controllers.ArticleController{}, "Post:New")
+	beego.Router("/blog/article/delete", &controllers.ArticleController{}, "Post:Delete")
+	beego.Router("/blog/article/update", &controllers.ArticleController{}, "Post:Update")
+	beego.Router("/blog/article/modifystate", &controllers.ArticleController{}, "Post:ModifyState")
 	beego.Router("/blog/article/get", &controllers.ArticleController{}, "Post:Get")
 	beego.Router("/blog/article/all", &controllers.ArticleController{}, "Post:All")
-	beego.Router("/blog/article/update", &controllers.ArticleController{}, "Post:Update")
 	beego.Router("/blog/article/approved", &controllers.ArticleController{}, "Post:Approved")
-	beego.Router("/blog/article/delete", &controllers.ArticleController{}, "Post:Delete")
+	beego.Router("/blog/article/created", &controllers.ArticleController{}, "Post:ListCreated")
 
 	beego.Router("/blog/tag/new", &controllers.TagController{}, "Post:New")
 	beego.Router("/blog/tag/delete", &controllers.TagController{}, "Post:Delete")

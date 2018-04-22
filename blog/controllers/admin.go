@@ -23,14 +23,14 @@ func (c *AdminController) New() {
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
 		log.Println(consts.ErrParam, err)
-		c.Data["json"] = map[string]interface{}{"status:": err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: err}
 	} else {
 		id, err := models.AdminService.New(req.Name, req.Pwd)
 		if err != nil {
 			log.Println(consts.ErrMongo, err)
-			c.Data["json"] = map[string]interface{}{"status:": err}
+			c.Data["json"] = map[string]interface{}{consts.Stauts: err}
 		}
-		c.Data["json"] = map[string]interface{}{"status": consts.Success, "id": id}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success, consts.Data: map[string]string{"id": id}}
 	}
 	c.ServeJSON()
 }
@@ -46,12 +46,12 @@ func (c *AdminController) Login() {
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
 		log.Println(consts.ErrParam, err)
-		c.Data["json"] = map[string]interface{}{"status": err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: err}
 	} else if !models.AdminService.Login(req.Name, req.Pwd) {
 		log.Println(consts.ErrMongo, err)
-		c.Data["json"] = map[string]interface{}{"status": err}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: err}
 	} else {
-		c.Data["json"] = map[string]interface{}{"status": consts.Success}
+		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success}
 	}
 	c.ServeJSON()
 }

@@ -1,4 +1,4 @@
-package initialize
+package mongo
 
 import (
 	"gopkg.in/mgo.v2"
@@ -9,8 +9,8 @@ import (
 
 type Mongodb struct {
 	S *mgo.Session
-	Db *mgo.Database
-	Con *mgo.Collection
+	D *mgo.Database
+	C *mgo.Collection
 }
 
 func ConnectMongo(collection string) (M Mongodb) {
@@ -23,7 +23,7 @@ func ConnectMongo(collection string) (M Mongodb) {
 
 	M.S.SetMode(mgo.Monotonic, true)
 
-	M.Db = M.S.DB(consts.Database)
-	M.Con = M.Db.C(collection)
+	M.D = M.S.DB(consts.Database)
+	M.C = M.D.C(collection)
 	return
 }
