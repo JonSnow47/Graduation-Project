@@ -81,7 +81,7 @@ func (sp *adminServiceProvide) New(name, pwd string) (string, error) {
 	return id.Hex(), err
 }
 
-func (sp *adminServiceProvide) Login(name, pwd string) bool {
+func (sp *adminServiceProvide) Login(name, pwd string) string {
 	s := CollectionAdmin()
 	c := s.DB(consts.Database).C(AdminCollection)
 	defer s.Close()
@@ -90,9 +90,9 @@ func (sp *adminServiceProvide) Login(name, pwd string) bool {
 	q := bson.M{"name": name}
 	err := c.Find(q).One(&a)
 	if err != nil {
-		return false
+		return ""
 	} else if !util.CompareHash([]byte(a.Pwd), pwd) {
-		return false
+		return ""
 	}
-	return true
+	return a.Id.Hex()
 }

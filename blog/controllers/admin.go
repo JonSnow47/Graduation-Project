@@ -8,6 +8,7 @@ import (
 
 	"github.com/JonSnow47/Graduation-Project/blog/consts"
 	"github.com/JonSnow47/Graduation-Project/blog/models"
+	"github.com/JonSnow47/Graduation-Project/blog/util"
 )
 
 type AdminController struct {
@@ -47,11 +48,18 @@ func (c *AdminController) Login() {
 	if err != nil {
 		log.Println(consts.ErrParam, err)
 		c.Data["json"] = map[string]interface{}{consts.Stauts: err}
-	} else if !models.AdminService.Login(req.Name, req.Pwd) {
-		log.Println(consts.ErrMongo, err)
-		c.Data["json"] = map[string]interface{}{consts.Stauts: err}
 	} else {
-		c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success}
+		if id := models.AdminService.Login(req.Name, req.Pwd); id == "" {
+			log.Println(consts.ErrLogin, err)
+			c.Data["json"] = map[string]interface{}{consts.Stauts: consts.ErrLogin}
+		} else {
+			token, err := util.NewToken(id)
+			if err != nil {
+				log.Println("New JWT failed:", err)
+			} else {
+				c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success, consts.Data: map[string]string{consts.RespToken: token}}
+			}
+		}
 	}
 	c.ServeJSON()
 }
