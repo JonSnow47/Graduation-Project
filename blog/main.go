@@ -1,10 +1,10 @@
 package main
 
 import (
-	_ "github.com/JonSnow47/Graduation-Project/blog/routers"
-
-	"github.com/astaxie/beego"
 	"log"
+
+	"github.com/JonSnow47/Graduation-Project/blog/routers"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/plugins/cors"
 )
 
@@ -12,9 +12,9 @@ func main() {
 	StartServer()
 }
 
-func StartServer()  {
+func StartServer() {
+	beego.BConfig.WebConfig.Session.SessionOn = true
 	log.SetFlags(log.Ldate | log.Lmicroseconds)
-
 	if beego.BConfig.RunMode == "dev" {
 		beego.BConfig.WebConfig.DirectoryIndex = true
 		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
@@ -25,8 +25,8 @@ func StartServer()  {
 		AllowMethods:     []string{"POST", "GET"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Access-Control-Allow-Origin"},
 		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: false,
+		AllowCredentials: true,
 	}))
-	beego.InsertFilter("/*", beego.BeforeRouter, filters.LoginFilter)
+	beego.InsertFilter("/*", beego.BeforeRouter, routers.LoginFilter)
 	beego.Run()
 }

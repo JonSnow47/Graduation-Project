@@ -8,7 +8,6 @@ import (
 
 	"github.com/JonSnow47/Graduation-Project/blog/consts"
 	"github.com/JonSnow47/Graduation-Project/blog/models"
-	"github.com/JonSnow47/Graduation-Project/blog/util"
 )
 
 type AdminController struct {
@@ -37,8 +36,6 @@ func (c *AdminController) New() {
 }
 
 func (c *AdminController) Login() {
-	//username := c.GetString("username")
-	//password := c.GetString("password")
 	var req struct {
 		Name string `json:"name" validate:"required"`
 		Pwd  string `json:"pwd" validate:"required"`
@@ -53,18 +50,20 @@ func (c *AdminController) Login() {
 			log.Println(consts.ErrLogin, err)
 			c.Data["json"] = map[string]interface{}{consts.Stauts: consts.ErrLogin}
 		} else {
-			token, err := util.NewToken(id)
+			// token, err := util.NewToken(id)
+			c.SetSession(consts.SessionId, id)
 			if err != nil {
-				log.Println("New JWT failed:", err)
+				log.Println("Session error:", err)
 			} else {
-				c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success, consts.Data: map[string]string{consts.RespToken: token}}
+				c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Success}
 			}
 		}
 	}
 	c.ServeJSON()
 }
 
-func (u *AdminController) Logout() {
-	u.Data["json"] = "logout success"
-	u.ServeJSON()
+func (c *AdminController) Logout() {
+	c.DelSession(consts.SessionId)
+	c.Data["json"] = "logout success"
+	c.ServeJSON()
 }

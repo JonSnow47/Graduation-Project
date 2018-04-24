@@ -158,6 +158,19 @@ func (c *ArticleController) Get() {
 		return
 	}
 
+	// JWT validate.
+	/*	tokenString := c.Ctx.Input.Header("Authorization")
+		if ok, err := util.ValidateToken(tokenString); err != nil {
+			log.Println(err)
+			c.Data["json"] = map[string]interface{}{consts.Stauts: consts.Failure,consts.Data: util.ErrExpired}
+			c.ServeJSON()
+			return
+		} else if !ok {
+			c.Data["json"] = map[string]interface{}{consts.Stauts: consts.ErrLoginRequired}
+			c.ServeJSON()
+			return
+		}*/
+
 	a, err := models.ArticleService.Get(req.Id)
 	if err != nil {
 		if err == mgo.ErrNotFound {
