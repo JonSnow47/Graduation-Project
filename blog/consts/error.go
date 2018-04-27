@@ -1,11 +1,10 @@
 package consts
 
 const (
-	Failure = iota // 失败
-	Success        // 成功
+	Success = 0 // 成功
 
-	Stauts = "Status"
-	Data   = "Data"
+	Status = "status"
+	Data   = "data"
 
 	ErrParam = "Invalid parameter"  // 参数错误
 	ErrPerm  = "Invalid permission" // 权限错误

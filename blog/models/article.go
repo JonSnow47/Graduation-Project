@@ -24,6 +24,7 @@ type Article struct {
 	Content string          `bson:"content"`
 	TagsId  []bson.ObjectId `bson:"tagsid"`
 	Img     string          `bson:"img"`
+	Views   int64           `bson:"views"`
 	Created time.Time       `bson:"created"`
 	State   int8            `bson:"state"`
 }
@@ -33,7 +34,7 @@ func CollectionArticle() mongo.Mongodb {
 	m := mongo.ConnectMongo(consts.CollectionArticle)
 	m.C.EnsureIndex(mgo.Index{
 		Key:        []string{"title"},
-		Unique:     true,
+		Unique:     false,
 		DropDups:   true,
 		Background: true,
 		Sparse:     true,
@@ -95,6 +96,11 @@ func (*articleServiceProvider) Get(id string) (a Article, err error) {
 	defer m.S.Close()
 
 	err = m.C.FindId(bson.ObjectIdHex(id)).One(&a)
+	if err != nil {
+		return
+	}
+
+	err = m.C.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"views": a.Views + 1}})
 	return
 }
 

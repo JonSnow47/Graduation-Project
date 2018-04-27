@@ -3,9 +3,10 @@ package main
 import (
 	"log"
 
-	"github.com/JonSnow47/Graduation-Project/blog/routers"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/plugins/cors"
+
+	"github.com/JonSnow47/Graduation-Project/blog/routers"
 )
 
 func main() {
@@ -17,7 +18,7 @@ func StartServer() {
 	log.SetFlags(log.Ldate | log.Lmicroseconds)
 	if beego.BConfig.RunMode == "dev" {
 		beego.BConfig.WebConfig.DirectoryIndex = true
-		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
+		beego.BConfig.WebConfig.StaticDir["/static"] = "static"
 	}
 
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{

@@ -28,6 +28,7 @@ var TagService *tagServiceProvider
 
 	return
 }*/
+
 func CollectionTag() mongo.Mongodb {
 	m := mongo.ConnectMongo(consts.CollectionTag)
 	m.C.EnsureIndex(mgo.Index{
@@ -95,4 +96,17 @@ func (*tagServiceProvider) All(page int) (tags []Tag, err error) {
 
 	err = m.C.Find(nil).Limit(20).Skip(20 * page).All(&tags)
 	return tags, err
+}
+
+func (*tagServiceProvider) Count(tagsid []bson.ObjectId) error {
+	m := CollectionTag()
+	defer m.S.Close()
+
+	for i, _ := range tagsid {
+		err := m.C.UpdateId(tagsid[i], bson.M{"$inc": bson.M{"count": +1}})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

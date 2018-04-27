@@ -25,7 +25,7 @@ func LoginFilter(ctx *context.Context) {
 	if _, ok := MapFilter[ctx.Request.RequestURI]; !ok {
 		id := ctx.Input.CruSession.Get(consts.SessionId)
 		if id == nil {
-			ctx.Output.JSON(map[string]interface{}{consts.Stauts: consts.ErrLoginRequired}, false, false)
+			ctx.Output.JSON(map[string]interface{}{consts.Status: consts.ErrLoginRequired}, false, false)
 		}
 	}
 }
