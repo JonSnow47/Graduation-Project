@@ -3,8 +3,13 @@
  *     Initial: 2018/04/28        Chen Yanchen
  */
 
-package conf
+package account
 
 const (
-	MongoURL = "localhost:27017"
+	// VIP level
+	Level0 = iota
+	Level1
+	Level2
+	Level3
+	Level4
 )
