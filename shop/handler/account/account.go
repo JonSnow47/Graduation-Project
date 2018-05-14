@@ -6,10 +6,12 @@
 package account
 
 import (
-	"github.com/labstack/echo"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/labstack/echo"
+	"github.com/JonSnow47/Graduation-Project/shop/model/account"
 )
 
 // WechatLogin login with wechat permission.
@@ -28,12 +30,18 @@ func Register(c echo.Context) error {
 		Name string `json:"name" validate:""`
 		Pwd  string `json:"pwd" validate:""`
 	}
+
 	if err := c.Bind(&req); err != nil {
 		log.Println("Request parametes error", err)
-		return c.JSON(http.StatusOK, "Request parametes error")
+		return c.JSON(http.StatusBadRequest, "Request parametes error")
 	}
 
-	avatar,err := c.FormFile("avatar")
+	if err := c.Validate(&req); err != nil {
+		log.Println("Request parametes error", err)
+		return c.JSON(http.StatusBadRequest, "Request parametes error")
+	}
+
+	avatar, err := c.FormFile("avatar")
 	if err != nil {
 		return err
 	}
@@ -51,7 +59,12 @@ func Register(c echo.Context) error {
 	}
 	defer dst.Close()
 
-	return nil
+	err = account.AccountService.Register(req.Name, req.Pwd, dst.Name())
+	if err != nil{
+		return err
+	}
+
+	return c.JSON(http.StatusCreated,"")
 }
 
 // Login in web.

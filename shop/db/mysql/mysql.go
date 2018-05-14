@@ -9,8 +9,9 @@ import (
 	"fmt"
 	"log"
 
-	_ "github.com/go-sql-driver/mysql"
+	 //_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 const DatabaseShop = "shop"
@@ -29,12 +30,12 @@ func InitMysql(dbname string) *gorm.DB {
 }
 
 func CreateTable(db *gorm.DB, v interface{}) *gorm.DB {
-	if !db.HasTable(&v) {
+	if !db.HasTable(&v) || !db.HasTable("users"){
+		log.Println(0)
 		err := db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").CreateTable(&v).Error
 		if err != nil {
 			panic(err)
 		}
 	}
-	log.Println("Create table success!")
 	return db
 }

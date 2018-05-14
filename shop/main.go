@@ -18,12 +18,11 @@ func init() {
 }
 
 func main() {
-	// set the log format.
+	// set the log format
 	log.SetFlags(log.Ldate | log.Lmicroseconds)
-
 	e := echo.New()
 
-	// config
+	// middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 

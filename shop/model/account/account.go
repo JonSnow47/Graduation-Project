@@ -17,7 +17,10 @@ import (
 
 type accountServiceProvider struct{}
 
-var AccountService *accountServiceProvider
+var (
+	AccountService *accountServiceProvider
+	db             *gorm.DB
+)
 
 type Account struct {
 	Id        int    `gorm:"primary_key"`
@@ -27,6 +30,7 @@ type Account struct {
 	Avatar    os.File
 	Male      bool `gorm:"type:bool"`
 	Level     int8 `gorm:"type:int;not null"` // Account level
+	Admin     bool `gorm:"type:bool;not null;default:false"`
 	State     bool `gorm:"type:bool"`
 	CreateAt  time.Time
 	LastLogin time.Time
@@ -34,8 +38,9 @@ type Account struct {
 
 func init() {
 	db := mysql.InitMysql(mysql.DatabaseShop)
-	db.Close()
-	db = db.CreateTable(db, Account{})
+	defer db.Close()
+	db = db.CreateTable(db, &Account{})
+	db = db.Model(Account{})
 }
 
 // WechatLogin login with wechat permission.
@@ -48,7 +53,7 @@ func (*accountServiceProvider) PhoneLogin(phone string) (u *Account, err error) 
 	db := mysql.InitMysql(mysql.DatabaseShop)
 	defer db.Close()
 
-	err = db.Model(&Account{}).Where(&Account{Phone: phone}).First(u).Error
+	err = db.Where(&Account{Phone: phone}).First(u).Error
 	if err == nil {
 		return
 	}
@@ -64,12 +69,12 @@ func (*accountServiceProvider) PhoneLogin(phone string) (u *Account, err error) 
 		State:    true,
 		CreateAt: time.Now(),
 	}
-	err = db.Model(&Account{}).Create(a).Error
+	err = db.Create(a).Error
 	return nil, err
 }
 
 // Register in web.
-func (*accountServiceProvider) Register(name, pwd string, avatar os.File) error {
+func (*accountServiceProvider) Register(name, pwd string, avatar string) error {
 	db := mysql.InitMysql(mysql.DatabaseShop)
 	defer db.Close()
 
@@ -82,7 +87,6 @@ func (*accountServiceProvider) Register(name, pwd string, avatar os.File) error 
 		Name:     name,
 		Pwd:      pwd,
 		Level:    Level0,
-		State:    true,
 		CreateAt: time.Now(),
 	}
 
