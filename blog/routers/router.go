@@ -17,7 +17,7 @@ func init() {
 	beego.Router("/blog/article/modifystate", &controllers.ArticleController{}, "Post:ModifyState")
 	beego.Router("/blog/article/get", &controllers.ArticleController{}, "Post:Get")
 	beego.Router("/blog/article/all", &controllers.ArticleController{}, "Post:All")
-	beego.Router("/blog/article/approved", &controllers.ArticleController{}, "Post:Approved")
+	beego.Router("/blog/article/approved", &controllers.ArticleController{}, "Get:Approved")
 	beego.Router("/blog/article/created", &controllers.ArticleController{}, "Post:ListCreated")
 
 	beego.Router("/blog/tag/new", &controllers.TagController{}, "Post:New")

@@ -18,15 +18,15 @@ var ArticleService *articleServiceProvider
 
 // Article represent the article information.
 type Article struct {
-	Id      bson.ObjectId   `bson:"_id,omitempty"`
-	Title   string          `bson:"title"`
-	Author  string          `bson:"author"`
-	Content string          `bson:"content"`
-	TagsId  []bson.ObjectId `bson:"tagsid"`
-	Img     string          `bson:"img"`
-	Views   int64           `bson:"views"`
-	Created time.Time       `bson:"created"`
-	State   int8            `bson:"state"`
+	Id      bson.ObjectId   `bson:"_id,omitempty"` // 文章 Id
+	Title   string          `bson:"title"`         // 标题
+	Author  string          `bson:"author"`        // 作者
+	Content string          `bson:"content"`       // 内容
+	TagsId  []bson.ObjectId `bson:"tagsid"`        // 标签Id
+	Img     string          `bson:"img"`           // 图片位置
+	Views   int64           `bson:"views"`         // 浏览次数
+	Created time.Time       `bson:"created"`       // 创建时间
+	State   int8            `bson:"state"`         // 状态: 删除(-2),不可浏览(-1),未审查(0),可浏览(1),热门(2)
 }
 
 // connect to mongodb.
@@ -47,8 +47,17 @@ func (*articleServiceProvider) New(a *Article) (string, error) {
 	m := CollectionArticle()
 	defer m.S.Close()
 
+	// 生成 ObjectId
 	a.Id = bson.NewObjectId()
+	// 匿名作者
+	if a.Author == "" {
+		a.Author = "Unknow"
+	}
+	// 将 base64 内容译码
+	// content,err := base64.StdEncoding.DecodeString(a.Content)
+	// a.Content = string(content)
 	a.Created = time.Now()
+
 	err := m.C.Insert(a)
 	if err != nil {
 		return "", err
@@ -117,12 +126,14 @@ func (*articleServiceProvider) All(page int) (articles []Article, err error) {
 }
 
 // Approved return all approved articles.
-func (*articleServiceProvider) Approved(page int) (articles []Article, err error) {
+func (*articleServiceProvider) Approved() (articles []Article, err error) {
 	m := CollectionArticle()
 	defer m.S.Close()
 
 	q := bson.M{"state": consts.Approverd}
-	err = m.C.Find(q).Limit(5).Skip(5 * page).All(&articles)
+	err = m.C.Find(q).All(&articles)
+	// 按页查找，每页5个
+	// err = m.C.Find(q).Limit(5).Skip(5 * page).All(&articles)
 	if err != nil {
 		return nil, err
 	}

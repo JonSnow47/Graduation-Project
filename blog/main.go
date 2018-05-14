@@ -10,12 +10,14 @@ import (
 )
 
 func main() {
-	StartServer()
+	startServer()
 }
 
-func StartServer() {
-	beego.BConfig.WebConfig.Session.SessionOn = true
+func startServer() {
+	// set the log format.
 	log.SetFlags(log.Ldate | log.Lmicroseconds)
+
+	beego.BConfig.WebConfig.Session.SessionOn = true
 	if beego.BConfig.RunMode == "dev" {
 		beego.BConfig.WebConfig.DirectoryIndex = true
 		beego.BConfig.WebConfig.StaticDir["/static"] = "static"

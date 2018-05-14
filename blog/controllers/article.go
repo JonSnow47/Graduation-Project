@@ -222,7 +222,7 @@ func (c *ArticleController) All() {
 
 // Approved view all approved articles.
 func (c *ArticleController) Approved() {
-	var req struct {
+/*	var req struct {
 		Page int `json:"page"`
 	}
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
@@ -231,9 +231,9 @@ func (c *ArticleController) Approved() {
 		c.Data["json"] = map[string]interface{}{consts.Status: consts.ErrParam, consts.Data: err}
 		c.ServeJSON()
 		return
-	}
+	}*/
 
-	articles, err := models.ArticleService.Approved(req.Page)
+	articles, err := models.ArticleService.Approved()
 	if err != nil {
 		if err == mgo.ErrNotFound {
 			c.Data["json"] = map[string]interface{}{consts.Status: consts.ErrMongo, consts.Data: err}

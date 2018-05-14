@@ -8,8 +8,8 @@ const (
 
 
 	// response key
-	RespStatus = "Status"
-	RespData = "Data"
+	RespStatus = "status"
+	RespData = "data"
 	RespId = "ID"
-	RespToken= "Token"
+	RespToken= "token"
 )
