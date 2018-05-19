@@ -92,7 +92,7 @@ func (c *TagController) Get() {
 		req struct {
 			Id string `json:"id"`
 		}
-		t models.Tag
+		t string
 	)
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {

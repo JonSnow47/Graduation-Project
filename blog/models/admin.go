@@ -21,10 +21,10 @@ var AdminService *adminServiceProvide
 // Admin represent admin information.
 type Admin struct {
 	Id      bson.ObjectId `bson:"_id,omitempty"`
-	Name    string        `bson:"name"`
-	Pwd     string        `bson:"pwd"`
-	Created time.Time     `bson:"created"`
-	State   bool          `bson:"state"`
+	Name    string        `bson:"Name"`
+	Pwd     string        `bson:"Pwd"`
+	Created time.Time     `bson:"Created"`
+	State   bool          `bson:"State"`
 }
 
 func CollectionAdmin() *mgo.Session {
@@ -38,7 +38,7 @@ func CollectionAdmin() *mgo.Session {
 	s.SetMode(mgo.Monotonic, true)
 
 	s.DB(consts.Database).C("admin").EnsureIndex(mgo.Index{
-		Key:        []string{"name"},
+		Key:        []string{"Name"},
 		Unique:     true,
 		DropDups:   true,
 		Background: true,
@@ -87,7 +87,7 @@ func (sp *adminServiceProvide) Login(name, pwd string) string {
 	defer s.Close()
 
 	var a Admin
-	q := bson.M{"name": name}
+	q := bson.M{"Name": name}
 	err := c.Find(q).One(&a)
 	if err != nil {
 		return ""

@@ -32,7 +32,7 @@ var TagService *tagServiceProvider
 func CollectionTag() mongo.Mongodb {
 	m := mongo.ConnectMongo(consts.CollectionTag)
 	m.C.EnsureIndex(mgo.Index{
-		Key:        []string{"name"},
+		Key:        []string{"Name"},
 		Unique:     true,
 		DropDups:   true,
 		Background: true,
@@ -44,9 +44,9 @@ func CollectionTag() mongo.Mongodb {
 // Tag represents the tag of article.
 type Tag struct {
 	Id    bson.ObjectId `bson:"_id,omitempty"`
-	Name  string        `bson:"name"`
-	Count int           `bson:"count"`
-	State bool          `bson:"state"`
+	Name  string        `bson:"Name"`
+	Count int           `bson:"Count"`
+	State bool          `bson:"State"`
 }
 
 // New insert a new article.
@@ -67,7 +67,7 @@ func (*tagServiceProvider) Delete(id string) error {
 	m := CollectionTag()
 	defer m.S.Close()
 
-	err := m.C.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"state": false}})
+	err := m.C.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"State": false}})
 	return err
 }
 
@@ -76,17 +76,18 @@ func (*tagServiceProvider) Enable(id string) error {
 	m := CollectionTag()
 	defer m.S.Close()
 
-	err := m.C.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"state": true}})
+	err := m.C.UpdateId(bson.ObjectIdHex(id), bson.M{"$set": bson.M{"State": true}})
 	return err
 }
 
-// Get one tag's info.
-func (*tagServiceProvider) Get(id string) (t Tag, err error) {
+// Get Tag.Name.
+func (*tagServiceProvider) Get(id string) (string, error) {
 	m := CollectionTag()
 	defer m.S.Close()
 
-	err = m.C.FindId(bson.ObjectIdHex(id)).One(&t)
-	return
+	var t Tag
+	err := m.C.FindId(bson.ObjectIdHex(id)).One(&t)
+	return t.Name, err
 }
 
 // All get all tags list.
@@ -103,7 +104,7 @@ func (*tagServiceProvider) Count(tagsid []bson.ObjectId) error {
 	defer m.S.Close()
 
 	for i, _ := range tagsid {
-		err := m.C.UpdateId(tagsid[i], bson.M{"$inc": bson.M{"count": +1}})
+		err := m.C.UpdateId(tagsid[i], bson.M{"$inc": bson.M{"Count": +1}})
 		if err != nil {
 			return err
 		}

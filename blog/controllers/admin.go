@@ -17,7 +17,7 @@ type AdminController struct {
 func (c *AdminController) New() {
 	var req struct {
 		Name string `json:"name" validate:"required"`
-		Pwd  string `json:"pwd" validate:"required"`
+		Pwd  string `json:"password" validate:"required"`
 	}
 
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
@@ -38,7 +38,7 @@ func (c *AdminController) New() {
 func (c *AdminController) Login() {
 	var req struct {
 		Name string `json:"name" validate:"required"`
-		Pwd  string `json:"pwd" validate:"required"`
+		Pwd  string `json:"password" validate:"required"`
 	}
 
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)

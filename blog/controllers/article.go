@@ -19,11 +19,12 @@ type ArticleController struct {
 // New create a new article.
 func (c *ArticleController) New() {
 	var req struct {
-		Title   string          `json:"title" validate:"required"`
-		Author  string          `json:"author"`
-		Content string          `json:"content" validate:"required"`
-		TagsId  []bson.ObjectId `json:"tagsid"`
-		Img     string          `json:"img"`
+		Title   string   `json:"title" validate:"required"`
+		Author  string   `json:"author"`
+		Brief   string   `json:"brief"`
+		Content string   `json:"content" validate:"required"`
+		Tags    []string `json:"tags"`
+		Img     string   `json:"img"`
 	}
 
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
@@ -37,8 +38,10 @@ func (c *ArticleController) New() {
 	a := &models.Article{
 		Title:   req.Title,
 		Author:  req.Author,
+		Brief:   req.Brief,
 		Content: req.Content,
-		TagsId:  req.TagsId,
+		Tags:    req.Tags,
+		Img:     req.Img,
 	}
 
 	id, err := models.ArticleService.New(a)
@@ -49,13 +52,14 @@ func (c *ArticleController) New() {
 		return
 	}
 
-	err = models.TagService.Count(req.TagsId)
-	if err != nil {
-		log.Println("Count error:", err)
-		c.Data["json"] = map[string]interface{}{consts.Status: consts.ErrMongo, consts.Data: err}
-		c.ServeJSON()
-		return
-	}
+	//Tag 计数
+	//err = models.TagService.Count(req.Tags)
+	//if err != nil {
+	//	log.Println("Count error:", err)
+	//	c.Data["json"] = map[string]interface{}{consts.Status: consts.ErrMongo, consts.Data: err}
+	//	c.ServeJSON()
+	//	return
+	//}
 
 	c.Data["json"] = map[string]interface{}{consts.Status: consts.Success, consts.Data: map[string]string{"id": id}}
 	c.ServeJSON()
@@ -89,12 +93,13 @@ func (c *ArticleController) Delete() {
 // Update update article.
 func (c *ArticleController) Update() {
 	var req struct {
-		Id      string          `json:"id" validate:"required"`
-		Title   string          `json:"title" validate:"required"`
-		Author  string          `json:"author"`
-		Content string          `json:"content" validate:"required"`
-		TagsId  []bson.ObjectId `json:"tagsid"`
-		Img     string          `json:"img"`
+		Id      string   `json:"id" validate:"required"`
+		Title   string   `json:"title" validate:"required"`
+		Author  string   `json:"author"`
+		Brief   string   `json:"brief"`
+		Content string   `json:"content" validate:"required"`
+		Tags    []string `json:"tags"`
+		Img     string   `json:"img"`
 	}
 
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
@@ -109,8 +114,9 @@ func (c *ArticleController) Update() {
 		Id:      bson.ObjectIdHex(req.Id),
 		Title:   req.Title,
 		Author:  req.Author,
+		Brief:   req.Brief,
 		Content: req.Content,
-		TagsId:  req.TagsId,
+		Tags:    req.Tags,
 		Img:     req.Img,
 	}
 	err = models.ArticleService.Update(a)
@@ -152,6 +158,33 @@ func (c *ArticleController) ModifyState() {
 	c.ServeJSON()
 }
 
+// 文章的返回内容
+type respArticle struct {
+	Id      string
+	Title   string
+	Author  string
+	Content string
+	Tags    []string
+	//TagsId  []bson.ObjectId
+}
+
+// 将 Article 转换为 respArticle
+func articleInfo(a *models.Article) *respArticle {
+	resp := &respArticle{
+		Id:      a.Id.Hex(),
+		Title:   a.Title,
+		Author:  a.Author,
+		Content: a.Content,
+		Tags:    a.Tags,
+	}
+	//for _, v := range a.TagsId {
+	//	t, _ := models.TagService.Get(v.Hex())
+	//	resp.Tags = append(resp.Tags, t)
+	//}
+
+	return resp
+}
+
 // Get get a article by id.
 func (c *ArticleController) Get() {
 	var req struct {
@@ -190,7 +223,8 @@ func (c *ArticleController) Get() {
 		}
 	}
 
-	c.Data["json"] = map[string]interface{}{consts.Status: consts.Success, consts.Data: a}
+	resp := articleInfo(&a)
+	c.Data["json"] = map[string]interface{}{consts.Status: consts.Success, consts.Data: resp}
 	c.ServeJSON()
 }
 
@@ -216,22 +250,28 @@ func (c *ArticleController) All() {
 		return
 	}
 
-	c.Data["json"] = map[string]interface{}{consts.Status: consts.Success, consts.Data: articles}
+	// 读取必要信息
+	var resp []*respArticle
+	for _, v := range articles {
+		resp = append(resp, articleInfo(&v))
+	}
+
+	c.Data["json"] = map[string]interface{}{consts.Status: consts.Success, consts.Data: resp}
 	c.ServeJSON()
 }
 
 // Approved view all approved articles.
 func (c *ArticleController) Approved() {
-/*	var req struct {
-		Page int `json:"page"`
-	}
-	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
-	if err != nil {
-		log.Println(consts.ErrParam, err)
-		c.Data["json"] = map[string]interface{}{consts.Status: consts.ErrParam, consts.Data: err}
-		c.ServeJSON()
-		return
-	}*/
+	/*	var req struct {
+			Page int `json:"page"`
+		}
+		err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+		if err != nil {
+			log.Println(consts.ErrParam, err)
+			c.Data["json"] = map[string]interface{}{consts.Status: consts.ErrParam, consts.Data: err}
+			c.ServeJSON()
+			return
+		}*/
 
 	articles, err := models.ArticleService.Approved()
 	if err != nil {
@@ -243,6 +283,12 @@ func (c *ArticleController) Approved() {
 		log.Println("Mongodb error:", err)
 		return
 	}
+
+	// 读取必要信息
+	//var resp []*respArticle
+	//for _, v := range articles {
+	//	resp = append(resp, articleInfo(&v))
+	//}
 
 	c.Data["json"] = map[string]interface{}{consts.Status: consts.Success, consts.Data: articles}
 	c.ServeJSON()
@@ -273,6 +319,12 @@ func (c *ArticleController) ListCreated() {
 		return
 	}
 
-	c.Data["json"] = map[string]interface{}{consts.Status: consts.Success, consts.Data: articles}
+	// 读取必要信息
+	var resp []*respArticle
+	for _, v := range articles {
+		resp = append(resp, articleInfo(&v))
+	}
+
+	c.Data["json"] = map[string]interface{}{consts.Status: consts.Success, consts.Data: resp}
 	c.ServeJSON()
 }
