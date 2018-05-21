@@ -14,4 +14,4 @@
 .glide/
 
 # Directory
-test/
+vendor

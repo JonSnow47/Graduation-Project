@@ -1,0 +1,19 @@
+package: github.com/JonSnow47/Graduation-Project
+homepage: https://github.com/JonSnow47/Graduation-Project
+license: MIT
+owners:
+- name: JonSnow47
+  email: c745539141@gmail.com
+  homepage: https://github.com/JonSnow47
+ignore:
+excludeDirs:
+import:
+- package: golang.org/x/crypto
+- package: gopkg.in/mgo.v2
+  subpackages:
+  - bson
+- package: github.com/astaxie/beego
+  version: ~1.9.2
+  subpackages:
+  - context
+  - plugins/cors

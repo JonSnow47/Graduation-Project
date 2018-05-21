@@ -1,5 +1,6 @@
 package controllers
 
+/*
 import (
 	"strings"
 
@@ -53,3 +54,4 @@ func (c *BaseController) ParseToken() (t *jwt.Token, err error) {
 
 	return token, nil
 }
+*/
