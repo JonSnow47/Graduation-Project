@@ -10,7 +10,7 @@ import (
 	"github.com/JonSnow47/Graduation-Project/blog/mongo"
 )
 
-const cname = "article"
+const collectionArticle = "article"
 
 type articleServiceProvider struct{}
 
@@ -32,7 +32,7 @@ type Article struct {
 
 // connect to mongodb.
 func CollectionArticle() mongo.Mongodb {
-	m := mongo.ConnectMongo(consts.CollectionArticle)
+	m := mongo.ConnectMongo(collectionArticle)
 	m.C.EnsureIndex(mgo.Index{
 		Key:        []string{"Title"},
 		Unique:     false,

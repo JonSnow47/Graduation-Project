@@ -12,7 +12,7 @@ import (
 	"github.com/JonSnow47/Graduation-Project/blog/util"
 )
 
-const AdminCollection = "admin"
+const collectionAdmin = "admin"
 
 type adminServiceProvide struct{}
 
@@ -50,25 +50,22 @@ func CollectionAdmin() *mgo.Session {
 // New create a new admin.
 func (sp *adminServiceProvide) New(name, pwd string) (string, error) {
 	s := CollectionAdmin()
-	c := s.DB(consts.Database).C(AdminCollection)
+	c := s.DB(consts.Database).C(collectionAdmin)
 	defer s.Close()
 
 	if len(pwd) < 6 || len(pwd) > 20 {
 		return "", errors.New("Password length error.")
 	}
 
-	id := bson.NewObjectId()
-
 	b, err := util.GenerateHash(pwd)
 	if err != nil {
 		return "", err
 	}
-	pwd = string(b)
 
 	a := &Admin{
-		Id:      id,
+		Id:      bson.NewObjectId(),
 		Name:    name,
-		Pwd:     pwd,
+		Pwd:     string(b),
 		Created: time.Now(),
 		State:   true,
 	}
@@ -78,12 +75,12 @@ func (sp *adminServiceProvide) New(name, pwd string) (string, error) {
 		return "", err
 	}
 
-	return id.Hex(), err
+	return a.Id.Hex(), err
 }
 
 func (sp *adminServiceProvide) Login(name, pwd string) string {
 	s := CollectionAdmin()
-	c := s.DB(consts.Database).C(AdminCollection)
+	c := s.DB(consts.Database).C(collectionAdmin)
 	defer s.Close()
 
 	var a Admin

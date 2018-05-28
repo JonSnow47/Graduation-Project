@@ -4,7 +4,6 @@ import (
 	"gopkg.in/mgo.v2"
 
 	"github.com/JonSnow47/Graduation-Project/blog/conf"
-	"github.com/JonSnow47/Graduation-Project/blog/consts"
 )
 
 type Mongodb struct {
@@ -15,7 +14,7 @@ type Mongodb struct {
 
 func ConnectMongo(collection string) (M Mongodb) {
 	var err error
-	url := conf.MongoURL + "/" + consts.Database
+	url := conf.MongoURL + "/" + conf.MongoDatabase
 	M.S, err = mgo.Dial(url)
 	if err != nil {
 		panic(err)
@@ -23,7 +22,7 @@ func ConnectMongo(collection string) (M Mongodb) {
 
 	M.S.SetMode(mgo.Monotonic, true)
 
-	M.D = M.S.DB(consts.Database)
+	M.D = M.S.DB(conf.MongoDatabase)
 	M.C = M.D.C(collection)
 	return
 }

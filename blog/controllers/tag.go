@@ -17,7 +17,6 @@ func (c *TagController) New() {
 		req struct {
 			Tag string `json:"tag" validate:"required,len<16"`
 		}
-		id  string
 		err error
 	)
 
@@ -28,21 +27,21 @@ func (c *TagController) New() {
 		goto Finish
 	}
 
-	id, err = models.TagService.New(req.Tag)
+	err = models.TagService.New(req.Tag)
 	if err != nil {
 		log.Println(consts.ErrMongo, err)
 		c.Data["json"] = map[string]interface{}{consts.Status: consts.ErrMongo, consts.Data: err}
 		goto Finish
 	}
 
-	c.Data["json"] = map[string]interface{}{consts.Status: consts.Success, consts.Data: id}
+	c.Data["json"] = map[string]interface{}{consts.Status: consts.Success}
 Finish:
 	c.ServeJSON()
 }
 
 func (c *TagController) Delete() {
 	var req struct {
-		Id string `json:"id" validate:"len=24"`
+		Tag string `json:"tag" validate:"len=24"`
 	}
 
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
@@ -52,7 +51,7 @@ func (c *TagController) Delete() {
 		goto Finish
 	}
 
-	if err = models.TagService.Delete(req.Id); err != nil {
+	if err = models.TagService.Delete(req.Tag); err != nil {
 		log.Println(consts.ErrMongo, err)
 		c.Data["json"] = map[string]interface{}{consts.Status: consts.ErrMongo, consts.Data: err}
 		goto Finish
@@ -65,7 +64,7 @@ Finish:
 
 func (c *TagController) Enable() {
 	var req struct {
-		Id string `json:"id"`
+		Tag string `json:"tag"`
 	}
 
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
@@ -75,7 +74,7 @@ func (c *TagController) Enable() {
 		goto Finish
 	}
 
-	if err = models.TagService.Enable(req.Id); err != nil {
+	if err = models.TagService.Enable(req.Tag); err != nil {
 		log.Println(consts.ErrMongo, err)
 		c.Data["json"] = map[string]interface{}{consts.Status: consts.ErrMongo, consts.Data: err}
 		goto Finish
@@ -90,9 +89,9 @@ Finish:
 func (c *TagController) Get() {
 	var (
 		req struct {
-			Id string `json:"id"`
+			Tag string `json:"tag"`
 		}
-		t string
+		t *models.Tag
 	)
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
@@ -101,7 +100,7 @@ func (c *TagController) Get() {
 		goto Finish
 	}
 
-	t, err = models.TagService.Get(req.Id)
+	t, err = models.TagService.Get(req.Tag)
 	if err != nil {
 		log.Println(consts.ErrMongo, err)
 		c.Data["json"] = map[string]interface{}{consts.Status: consts.ErrMongo, consts.Data: err}
@@ -115,21 +114,9 @@ Finish:
 
 // All list of all tags.
 func (c *TagController) All() {
-	var (
-		req struct {
-			Page int `json:"page"`
-		}
-		tags []models.Tag
-	)
+	var tags []*models.Tag
 
-	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
-	if err != nil {
-		log.Println(consts.ErrParam, err)
-		c.Data["json"] = map[string]interface{}{consts.Status: consts.ErrParam, consts.Data: err}
-		goto Finish
-	}
-
-	tags, err = models.TagService.All(req.Page)
+	tags, err := models.TagService.All()
 	if err != nil {
 		log.Println(consts.ErrMongo, err)
 		c.Data["json"] = map[string]interface{}{consts.Status: consts.ErrMongo, consts.Data: err}
