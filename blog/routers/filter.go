@@ -11,6 +11,7 @@ var MapFilter map[string]interface{}
 func init() {
 	MapFilter = make(map[string]interface{})
 
+	MapFilter["/admin/new"] = struct{}{}
 	MapFilter["/admin/login"] = struct{}{}
 
 	MapFilter["/blog/article/get"] = struct{}{}

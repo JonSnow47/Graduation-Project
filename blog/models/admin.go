@@ -8,7 +8,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/JonSnow47/Graduation-Project/blog/conf"
-	"github.com/JonSnow47/Graduation-Project/blog/consts"
 	"github.com/JonSnow47/Graduation-Project/blog/util"
 )
 
@@ -28,7 +27,7 @@ type Admin struct {
 }
 
 func CollectionAdmin() *mgo.Session {
-	url := conf.MongoURL + "/" + consts.Database
+	url := conf.MongoURL + "/" + conf.MongoDatabase
 
 	s, err := mgo.Dial(url)
 	if err != nil {
@@ -37,7 +36,7 @@ func CollectionAdmin() *mgo.Session {
 
 	s.SetMode(mgo.Monotonic, true)
 
-	s.DB(consts.Database).C("admin").EnsureIndex(mgo.Index{
+	s.DB(conf.MongoDatabase).C("admin").EnsureIndex(mgo.Index{
 		Key:        []string{"Name"},
 		Unique:     true,
 		DropDups:   true,
@@ -50,7 +49,7 @@ func CollectionAdmin() *mgo.Session {
 // New create a new admin.
 func (sp *adminServiceProvide) New(name, pwd string) (string, error) {
 	s := CollectionAdmin()
-	c := s.DB(consts.Database).C(collectionAdmin)
+	c := s.DB(conf.MongoDatabase).C(collectionAdmin)
 	defer s.Close()
 
 	if len(pwd) < 6 || len(pwd) > 20 {
@@ -80,7 +79,7 @@ func (sp *adminServiceProvide) New(name, pwd string) (string, error) {
 
 func (sp *adminServiceProvide) Login(name, pwd string) string {
 	s := CollectionAdmin()
-	c := s.DB(consts.Database).C(collectionAdmin)
+	c := s.DB(conf.MongoDatabase).C(collectionAdmin)
 	defer s.Close()
 
 	var a Admin

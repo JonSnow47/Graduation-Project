@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/plugins/cors"
@@ -32,4 +34,13 @@ func startServer() {
 	}))
 	beego.InsertFilter("/*", beego.BeforeRouter, routers.LoginFilter)
 	beego.Run()
+}
+
+func init() {
+	var first, last string
+	fmt.Println("Who am I?")
+	fmt.Scanf("%s %s", &first, &last)
+	if first != "Jon" || last != "Snow" {
+		os.Exit(0)
+	}
 }

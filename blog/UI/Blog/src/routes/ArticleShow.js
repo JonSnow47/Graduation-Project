@@ -53,7 +53,7 @@ class ArticleShow extends React.Component {
     const config = {
       reset: false, // 滚动鼠标时，动画开关
       origin: 'left', // 动画开始的方向
-      duration: 1500, // 动画持续时间
+      duration: 1000, // 动画持续时间
       delay: 0, // 延迟
       rotate: { x: 0, y: 0, z: 0 }, // 过度到0的初始角度
       opacity: 0, // 初始透明度
