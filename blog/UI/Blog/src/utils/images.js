@@ -29,10 +29,16 @@
 
 const images = {
   headImage: [
+    // 'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-32591.jpg',
+    // 'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-447929.jpg',
+    // 'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-55710.jpg',
+    'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-32591.jpg',
+    'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-662597.jpg',
+    'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-662586.jpg',
     'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-543828.jpg',
     'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-267050.jpg',
-    'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-16295.jpg',
-    'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-267055.png',
+    // 'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-16295.jpg',
+    // 'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-267055.png',
   ],
   detailsImage: [
     'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-290948.jpg',

@@ -45,22 +45,20 @@ func CollectionArticle() mongo.Mongodb {
 
 // New insert a new article.
 func (*articleServiceProvider) New(a *Article) (string, error) {
-	m := CollectionArticle()
-	defer m.S.Close()
+	m := CollectionArticle() // 连接到MongoDB
+	defer m.S.Close()        // 函数执行完毕后关闭连接
 
-	// 生成 ObjectId
-	a.Id = bson.NewObjectId()
-	// 匿名作者
 	if a.Author == "" {
-		a.Author = "Unknown"
+		a.Author = "Unknown" // 匿名作者
 	}
 	// 将 base64 内容译码
 	//content, err := base64.StdEncoding.DecodeString(a.Content)
 	//a.Content = string(content)
-	a.Created = time.Now()
-	a.State = consts.Approverd
+	a.Id = bson.NewObjectId()  // 生成 ObjectId
+	a.Created = time.Now()     // 以当前时间为创建时间
+	a.State = consts.Approverd // 默认为可用状态
 
-	err := m.C.Insert(a)
+	err := m.C.Insert(a) // 向数据库插入数据
 	if err != nil {
 		return "", err
 	}
@@ -155,4 +153,13 @@ func (*articleServiceProvider) ListCreated(page int) (articles []Article, err er
 		return nil, err
 	}
 	return articles, err
+}
+
+// ListByTag get articles by a tag.
+func (*articleServiceProvider) ListByTag(tag string) (articles []Article, err error) {
+	m := CollectionArticle()
+	defer m.S.Close()
+
+	err = m.C.Find(bson.M{"Tags":tag,"State":consts.Approverd}).All(&articles)
+	return
 }

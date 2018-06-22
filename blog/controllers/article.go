@@ -18,6 +18,7 @@ type ArticleController struct {
 
 // New create a new article.
 func (c *ArticleController) New() {
+	// 请求参数集合
 	var req struct {
 		Title   string   `json:"title" validate:"required"`
 		Author  string   `json:"author"`
@@ -27,7 +28,7 @@ func (c *ArticleController) New() {
 		Img     string   `json:"img"`
 	}
 
-	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req) // 将前端传来的 json 数据解析到 req 结构体中
 	if err != nil {
 		log.Println(consts.ErrParam, err)
 		c.Data["json"] = map[string]interface{}{consts.Status: consts.ErrParam, consts.Data: err}
@@ -53,13 +54,13 @@ func (c *ArticleController) New() {
 	}
 
 	//Tag 计数
-	//err = models.TagService.Count(req.Tags)
-	//if err != nil {
-	//	log.Println("Count error:", err)
-	//	c.Data["json"] = map[string]interface{}{consts.Status: consts.ErrMongo, consts.Data: err}
-	//	c.ServeJSON()
-	//	return
-	//}
+	err = models.TagService.Count(req.Tags)
+	if err != nil {
+		log.Println("Count error:", err)
+		c.Data["json"] = map[string]interface{}{consts.Status: consts.ErrMongo, consts.Data: err}
+		c.ServeJSON()
+		return
+	}
 
 	c.Data["json"] = map[string]interface{}{consts.Status: consts.Success, consts.Data: map[string]string{"id": id}}
 	c.ServeJSON()

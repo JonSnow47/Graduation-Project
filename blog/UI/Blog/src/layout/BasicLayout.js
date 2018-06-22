@@ -89,7 +89,7 @@ class BasicLayout extends Component {
             <Header
               as="h1"
               textAlign="center"
-              content="Cease to struggle and you cease to live"
+              content="Made in Earth by humans."
               inverted
               style={{ fontSize: '4em', fontWeight: 'normal', marginBottom: 0, marginTop: '3em' }}
             />

@@ -36,16 +36,16 @@ class BasicLayout extends React.Component {
                 <Menu.Item key="2">
                   <Link to="/main/management">管理文章</Link>
                 </Menu.Item>
-                <Menu.Item>
+                {/* <Menu.Item>
                   修改文章
-                </Menu.Item>
+                </Menu.Item> */}
               </SubMenu>
-              <SubMenu key="sub2" title={<span><Icon type="laptop" />主界面信息修改</span>}>
+              {/* <SubMenu key="sub2" title={<span><Icon type="laptop" />主界面信息修改</span>}>
                 <Menu.Item key="1">头部信息</Menu.Item>
                 <Menu.Item key="2">个人简介</Menu.Item>
                 <Menu.Item key="3">底部链接</Menu.Item>
                 <Menu.Item key="4">标签</Menu.Item>
-              </SubMenu>
+              </SubMenu> */}
             </Menu>
           </Sider>
           <Layout style={{ padding: '0 24px 24px' }}>

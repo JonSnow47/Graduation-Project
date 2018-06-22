@@ -44,9 +44,9 @@ func CollectionTag() mongo.Mongodb {
 
 // Tag represents the tag of article.
 type Tag struct {
-	Id    string `bson:"_id"`
-	Count int    `bson:"Count"`
-	State bool   `bson:"State"`
+	Id    string `bson:"_id"`   // 标签的Id即为标签
+	Count int    `bson:"Count"` // 计数，拥有这个标签的文章数
+	State bool   `bson:"State"` // 是否可用
 }
 
 // New insert a new article.

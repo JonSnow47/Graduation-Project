@@ -1,0 +1,11 @@
+package: github.com/JonSnow47/Graduation-Project/blog
+import:
+- package: github.com/astaxie/beego
+  version: ^1.9.2
+  subpackages:
+  - context
+  - plugins/cors
+- package: golang.org/x/crypto/bcrypt
+- package: gopkg.in/mgo.v2
+  subpackages:
+  - bson
